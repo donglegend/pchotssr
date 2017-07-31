@@ -1,0 +1,5 @@
+src/client/lib/*.js
+src/client/components/tmp/**
+tests/**
+dist/**
+webpack
