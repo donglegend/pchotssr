@@ -1,5 +1,3 @@
-const logger = require('../logger').logger
-
 exports.answer = function (success, msg, data) {
     return {
         success: success,

@@ -1,8 +1,8 @@
 require('babel-core/register')
-const path = require('path')
-const express = require('express')
+// const path = require('path')
+// const express = require('express')
 const opn = require('opn')
-const _app = require('../src/server/index')
+const _app = require('../src/index')
 const app = _app.app
 const router = _app.router
 
@@ -46,15 +46,14 @@ app.use(hotMiddleware)
 
 app.use('/', router)
 
-var staticPath = path.posix.join(config.dev.assetsPublicPath, config.dev.assetsSubDirectory)
+// var staticPath = path.posix.join(config.dev.assetsPublicPath, config.dev.assetsSubDirectory)
 // app.use(staticPath, express.static('./static'))
 
 const uri = 'http://localhost:' + port
 
 console.log('> Starting dev server...')
 devMiddleware.waitUntilValid(() => {
-    console.log(uri + '\n')
-    process.send('启动成功')
+    process.send(uri)
     // when env is testing, don't need open it
     if (autoOpenBrowser && process.env.NODE_ENV !== 'testing') {
         opn(uri)

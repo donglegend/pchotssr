@@ -5,7 +5,7 @@ const bodyParser = require('body-parser')
 const router = require('./routes')
 const app = express()
 
-app.use(express.static(path.join(__dirname, '/client')))
+app.use(express.static(path.join(__dirname, '../build/client')))
 
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({

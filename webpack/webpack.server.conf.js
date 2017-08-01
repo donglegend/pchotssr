@@ -1,44 +1,100 @@
 /**
- * webpack server prod 配置
+ * webpack server 配置
  */
-var path = require('path')
-var rootPath = path.join(__dirname, '../')
-var nodeExternals = require('webpack-node-externals')
+const path = require('path')
+const webpack = require('webpack')
+const VueSSRPlugin = require('vue-ssr-webpack-plugin')
+const utils = require('./utils')
+const entry = require('./lib/entryInfo').getServerEntry()
+const config = require('../config')
+const merge = require('webpack-merge')
+
+function resolve(dir) {
+    return path.join(__dirname, '..', dir)
+}
+const rootPath = path.resolve(__dirname, '../')
 
 const isProduction = process.env.NODE_ENV === 'production'
-const entryPath = isProduction ? path.join(rootPath, './src/server/bin/www.js') : path.join(__dirname, './dev-server.js')
+const vueLoaderConfig = {
+    loaders: utils.cssLoaders({
+        sourceMap: isProduction ?
+            config.build.productionSourceMap : config.dev.cssSourceMap,
+        extract: isProduction
+    })
+}
+// var cssLoader = utils.styleLoaders({
+//     sourceMap: config.build.productionSourceMap,
+//     extract: true
+// })
+// console.log(cssLoader)
 
-var config = {
-    entry: {
-        app: entryPath
-    },
-    target: 'node',
-    context: path.resolve(__dirname, '../build'),
-    output: {
-        path: path.join(rootPath, 'build'),
-        filename: 'index.js'
-    },
-    resolve: {
-        extensions: ['.js']
-    },
-    externals: [nodeExternals({
-        modulesDir: path.join(rootPath, 'node_modules')
-    })],
-    node: {
-        console: true,
-        global: true,
-        process: true,
-        Buffer: true,
-        __filename: false,
-        __dirname: true,
-        setImmediate: true
-    },
-    module: {
-        rules: [{
-            test: /\.js$/,
-            loader: 'babel-loader'
-        }]
-    }
+function getConfig(entry) {
+    return merge({
+        entry: path.resolve(__dirname, '../src/views/entry/server', entry + '.js'),
+        target: 'node',
+        output: {
+            libraryTarget: 'commonjs2', // !different
+            path: path.join(rootPath, 'build/bundles')
+        },
+        resolve: {
+            alias: {
+                'vue$': 'vue/dist/vue.esm.js',
+                'components': resolve('/src/client/components'), // 定义文件路径， 加速打包过程中webpack路径查找过程
+                '@': rootPath
+            },
+            extensions: ['.js', '.less', '.vue', '*', '.json']
+        },
+        externals: Object.keys(require('../package.json').dependencies),
+        module: {
+            rules: [{
+                test: /\.vue$/,
+                loader: 'vue-loader',
+                options: vueLoaderConfig
+            }, {
+                test: /\.js$/,
+                loader: 'babel-loader',
+                include: [resolve('src')],
+                exclude: /node_modules/
+            }, {
+                test: /\.(png|jpe?g|gif|svg)(\?.*)?$/,
+                loader: 'url-loader',
+                options: {
+                    limit: 10000,
+                    name: utils.assetsPath('images/[name].[ext]')
+                }
+            }, {
+                test: /\.(woff2?|eot|ttf|otf)(\?.*)?$/,
+                loader: 'url-loader',
+                options: {
+                    limit: 10000,
+                    name: utils.assetsPath('fonts/[name].[ext]')
+                }
+            }]
+        },
+        plugins: [
+            new VueSSRPlugin({
+                filename: entry + '-vue-ssr-bundle.json'
+            }),
+            new webpack.optimize.UglifyJsPlugin({
+                compress: {
+                    warnings: false
+                },
+                sourceMap: false
+            }),
+            new webpack.DefinePlugin({
+                'process.env': {
+                    NODE_ENV: '"production"'
+                }
+            })
+        ]
+    }, {
+        module: {
+            rules: utils.styleLoaders({
+                sourceMap: config.build.productionSourceMap,
+                extract: false
+            })
+        }
+    })
 }
 
-module.exports = config
+module.exports = entry.map(name => getConfig(name))

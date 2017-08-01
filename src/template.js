@@ -3,6 +3,8 @@ const path = require('path')
 const fs = require('fs-extra')
 
 let cacheAssetsJson = ''
+
+const isDevelopmen = process.env.NODE_ENV === 'development'
 /**
  * 开发环境和生产环境 路径不同
  */
@@ -10,7 +12,7 @@ function getAssetsJson(env) {
     if (cacheAssetsJson) {
         return cacheAssetsJson
     }
-    const _p = env ? '../../client-assets.json' : './bundles/client-assets.json'
+    const _p = env ? '../client-assets.json' : '../build/bundles/client-assets.json'
     cacheAssetsJson = fs.readJsonSync(path.join(__dirname, _p))
     return cacheAssetsJson
 }
@@ -20,8 +22,8 @@ function render(name) {
     const cdn = config.cdn
     const env = config.name
     const startup = config.startup
-    const assetsJson = getAssetsJson(!cdn)
-    const publicPath = !cdn ? '' : staticServer + '/' + cdn
+    const assetsJson = getAssetsJson(isDevelopmen)
+    const publicPath = isDevelopmen ? '' : staticServer + '/' + cdn
     const css = assetsJson[name].css.map(function (item) {
         return `<link rel="stylesheet" href="${publicPath}/${item}" />`
     }).join('')
@@ -51,7 +53,9 @@ function render(name) {
         <title>错误信息收集平台</title>
     </head>
     <body>
-        <div id="app"></div>
+        <div id="app">
+            <!--vue-ssr-outlet-->
+        </div>
         ${scripts}
     </body>
     </html>

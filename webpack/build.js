@@ -6,6 +6,8 @@ var path = require('path')
 var chalk = require('chalk')
 var webpack = require('webpack')
 var config = require('../config')
+var webpackIndexConfig = require('./webpack.index.conf')
+
 var webpackServerConfig = require('./webpack.server.conf')
 
 var packageInfo = require('./lib/packageInfo.js')
@@ -23,7 +25,8 @@ rm(path.join(config.build.assetsRoot), err => {
                 publicPath: '/' + cdn + '/'
             }
         })
-        webpack([webpackConfig, webpackServerConfig], function (err, stats) {
+        // [webpackConfig, webpackIndexConfig, ...getWebpackServerConfig()]
+        webpack([webpackConfig, webpackIndexConfig, ...webpackServerConfig], function (err, stats) {
             spinner.stop()
             if (err) throw err
             process.stdout.write(stats.toString({

@@ -1,7 +1,9 @@
 import Vue from 'vue'
-import App from '../page/404/404'
+import App from '../../page/App'
 
-/* eslint-disable no-new */
+import axios from '../../lib/axios'
+Vue.prototype.$ajax = axios
+
 new Vue({
     el: '#app',
     template: '<App/>',
