@@ -16,10 +16,18 @@
 </style>
 
 <script>
+    import {
+        mapGetters
+    } from 'vuex'
     import headTop from '../../components/head.vue'
     import myMenu from './menu.vue'
 
     export default {
+        computed: {
+            ...mapGetters([
+                'userInfo'
+            ])
+        },
         components: {
             headTop,
             myMenu

@@ -55,7 +55,7 @@ function init() {
         const pkg = JSON.parse(pkgStr)
         config.cdn = pkg.cdn
     } catch (error) {
-        env !== 'dev' && console.info('can not read package.json')
+        env !== 'development' && console.info('can not read package.json')
     }
     return {
         name: get('name', config),
@@ -86,7 +86,7 @@ function get(key, config) {
     let value = getConfig(key, config)
     if (value === null) {
         value = getConfig(key, baseConfig.default)
-        if (value === null) {
+        if (value === null && process.env.NODE_ENV !== 'development') {
             console.warn('defaultConfig is undefined', key)
         }
     }

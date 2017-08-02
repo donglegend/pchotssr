@@ -6,8 +6,7 @@ const webpack = require('webpack')
 const VueSSRPlugin = require('vue-ssr-webpack-plugin')
 const utils = require('./utils')
 const entry = require('./lib/entryInfo').getServerEntry()
-const config = require('../config')
-const merge = require('webpack-merge')
+const config = require('./config')
 
 function resolve(dir) {
     return path.join(__dirname, '..', dir)
@@ -19,7 +18,7 @@ const vueLoaderConfig = {
     loaders: utils.cssLoaders({
         sourceMap: isProduction ?
             config.build.productionSourceMap : config.dev.cssSourceMap,
-        extract: isProduction
+        extract: false
     })
 }
 // var cssLoader = utils.styleLoaders({
@@ -29,7 +28,7 @@ const vueLoaderConfig = {
 // console.log(cssLoader)
 
 function getConfig(entry) {
-    return merge({
+    return {
         entry: path.resolve(__dirname, '../src/views/entry/server', entry + '.js'),
         target: 'node',
         output: {
@@ -46,7 +45,10 @@ function getConfig(entry) {
         },
         externals: Object.keys(require('../package.json').dependencies),
         module: {
-            rules: [{
+            rules: [...utils.styleLoaders({
+                sourceMap: config.build.productionSourceMap,
+                extract: false
+            }), {
                 test: /\.vue$/,
                 loader: 'vue-loader',
                 options: vueLoaderConfig
@@ -87,14 +89,7 @@ function getConfig(entry) {
                 }
             })
         ]
-    }, {
-        module: {
-            rules: utils.styleLoaders({
-                sourceMap: config.build.productionSourceMap,
-                extract: false
-            })
-        }
-    })
+    }
 }
 
 module.exports = entry.map(name => getConfig(name))

@@ -6,7 +6,7 @@ const _app = require('../src/index')
 const app = _app.app
 const router = _app.router
 
-const config = require('../config')
+const config = require('./config')
 process.env.NODE_ENV = JSON.parse(config.dev.env.NODE_ENV)
 
 const webpack = require('webpack')

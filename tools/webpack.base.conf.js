@@ -3,7 +3,7 @@
  */
 var path = require('path')
 var utils = require('./utils')
-var config = require('../config')
+var config = require('./config')
 var webpack = require('webpack')
 var entryInfo = require('./lib/entryInfo')
 var OutPutEntryAssetsPlugin = require('./lib/outPutEntryAssetsPlugin')

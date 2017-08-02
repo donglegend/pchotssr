@@ -56,6 +56,8 @@ function render(name) {
         <div id="app">
             <!--vue-ssr-outlet-->
         </div>
+        {{{ renderState() }}}
+        {{{ renderScripts() }}}
         ${scripts}
     </body>
     </html>

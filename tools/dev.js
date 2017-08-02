@@ -19,6 +19,7 @@ function formatLog(str, color) {
 }
 
 compilerServer()
+comilerIndex()
 
 function compilerServer() {
     spinner.start()
@@ -38,7 +39,6 @@ function compilerServer() {
     })
     Promise.all(tasks).then(() => {
         formatLog('服务端编译完成', 'green')
-        comilerIndex()
     })
 }
 

@@ -1,5 +1,5 @@
 <template>
-    <div class="error"></div>
+    <div id="app" class="error"></div>
 </template>
 
 <style lang="less" scoped>

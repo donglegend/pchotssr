@@ -2,11 +2,11 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Vuex from 'vuex'
 
-import StoreFactory from '../../store/index'
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-default/index.css'
-
 import routerConfig from '../../page/admin/route'
+import StoreFactory from '../../store/index'
+
 import App from '../../page/admin'
 
 import '../../assets/reset.css'
@@ -20,12 +20,16 @@ const store = StoreFactory({})
 const router = new VueRouter({
     routerConfig
 })
-if (window.__INITIAL_STATE__) {
-    store.replaceState(window.__INITIAL_STATE__)
-}
-new Vue({
-    el: '#app',
+
+const app = new Vue({
+    ...App,
     router,
-    store,
-    extends: App
+    store
 })
+export default (context) => {
+    return new Promise((resolve, reject) => {
+        // context 携带数据
+        context.state = store.state
+        resolve(app)
+    })
+}
